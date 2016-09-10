@@ -20,48 +20,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.iluwatar.hexagonal.database;
+package com.iluwatar.hexagonal.administration;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
+import com.google.inject.Inject;
+import com.iluwatar.hexagonal.domain.LotteryNumbers;
+import com.iluwatar.hexagonal.domain.LotterySystem;
 import com.iluwatar.hexagonal.domain.LotteryTicket;
 import com.iluwatar.hexagonal.domain.LotteryTicketId;
 
+import java.util.Map;
+
 /**
  * 
- * Mock database for lottery tickets.
+ * Lottery administration implementation
  *
  */
-public class LotteryTicketInMemoryRepository implements LotteryTicketRepository {
+public class ConsoleAdministration implements LotteryAdministration {
+
+  private final LotterySystem lotterySystem;
+
+  @Inject
+  public ConsoleAdministration(LotterySystem lotterySystem) {
+    this.lotterySystem = lotterySystem;
+  }
   
-  private static Map<LotteryTicketId, LotteryTicket> tickets = new HashMap<>();
-
   @Override
-  public Optional<LotteryTicket> findById(LotteryTicketId id) {
-    LotteryTicket ticket = tickets.get(id);
-    if (ticket == null) {
-      return Optional.empty();
-    } else {
-      return Optional.of(ticket);
-    }
+  public Map<LotteryTicketId, LotteryTicket> getAllSubmittedTickets() {
+    return lotterySystem.getAllSubmittedTickets();
   }
 
   @Override
-  public Optional<LotteryTicketId> save(LotteryTicket ticket) {
-    LotteryTicketId id = new LotteryTicketId();
-    tickets.put(id, ticket);
-    return Optional.of(id);
+  public LotteryNumbers performLottery() {
+    return lotterySystem.performLottery();
   }
 
   @Override
-  public Map<LotteryTicketId, LotteryTicket> findAll() {
-    return tickets;
-  }
-
-  @Override
-  public void deleteAll() {
-    tickets.clear();
+  public void resetLottery() {
+    lotterySystem.resetLottery();
   }
 }
